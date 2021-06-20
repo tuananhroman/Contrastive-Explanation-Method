@@ -31,7 +31,7 @@ from aen_CEM import AEADEN
 
 
 def main(args):
-    with tf.Session() as sess:
+    with tf.compat.v1.Session() as sess:
         random.seed(121)
         np.random.seed(1211)
 
