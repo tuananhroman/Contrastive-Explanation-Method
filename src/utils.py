@@ -1,4 +1,4 @@
-## Utils.py -- Some utility functions 
+## Utils.py -- Some utility functions
 ##
 ## Copyright (C) 2018, IBM Corp
 ##                     Chun-Chen Tu <timtu@umich.edu>
@@ -16,13 +16,40 @@
 ## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
-
-from keras.models import Model, model_from_json, Sequential
-from PIL import Image
+##
+## Edited: 06.2021 - Tuan Anh, Le - <tuananhle@dai-lab.de>
 
 import tensorflow as tf
 import os
 import numpy as np
+import logging
+
+from keras.models import Model, model_from_json, Sequential
+from PIL import Image
+
+
+def setup_logger(name: str) -> logging.Logger:
+    """Logger setup.
+    
+    If you want to adjust the level, use
+    > logger.setLevel(logging.DEBUG)
+    where level is one of DEBUG, INFO, WARNING, ERROR or CRITICAL.
+    """
+    formatter = logging.Formatter(
+        "%(asctime)s | %(name)s | %(levelname)s | %(message)s"
+    )
+
+    file_handler = logging.FileHandler(filename="CEM.log")
+    stderr_handler = logging.StreamHandler()
+    file_handler.setFormatter(formatter)
+    stderr_handler.setFormatter(formatter)
+
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(file_handler)
+    logger.addHandler(stderr_handler)
+
+    return logger
 
 
 def load_AE(codec_prefix, print_summary=False):
@@ -33,13 +60,21 @@ def load_AE(codec_prefix, print_summary=False):
     decoder_weight_filename = saveFilePrefix + "decoder.h5"
 
     if not os.path.isfile(decoder_model_filename):
-        raise Exception("The file for decoder model does not exist:{}".format(decoder_model_filename))
-    json_file = open(decoder_model_filename, 'r')
+        raise Exception(
+            "The file for decoder model does not exist:{}".format(
+                decoder_model_filename
+            )
+        )
+    json_file = open(decoder_model_filename, "r")
     decoder = model_from_json(json_file.read(), custom_objects={"tf": tf})
     json_file.close()
 
     if not os.path.isfile(decoder_weight_filename):
-        raise Exception("The file for decoder weights does not exist:{}".format(decoder_weight_filename))
+        raise Exception(
+            "The file for decoder weights does not exist:{}".format(
+                decoder_weight_filename
+            )
+        )
     decoder.load_weights(decoder_weight_filename)
 
     if print_summary:
@@ -48,13 +83,15 @@ def load_AE(codec_prefix, print_summary=False):
 
     return decoder
 
-def save_img(img, name = "output.png"):
+
+def save_img(img, name="output.png"):
 
     np.save(name, img)
-    fig = np.around((img + 0.5)*255)
+    fig = np.around((img + 0.5) * 255)
     fig = fig.astype(np.uint8).squeeze()
     pic = Image.fromarray(fig)
     pic.save(name)
+
 
 def generate_data(data, id, target_label):
     inputs = []
@@ -68,8 +105,9 @@ def generate_data(data, id, target_label):
 
     return inputs, target_vec
 
+
 def model_prediction(model, inputs):
     prob = model.model.predict(inputs)
     predicted_class = np.argmax(prob)
-    prob_str = np.array2string(prob).replace('\n','')
+    prob_str = np.array2string(prob).replace("\n", "")
     return prob, predicted_class, prob_str

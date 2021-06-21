@@ -1,0 +1,2 @@
+#base
+tensorflow-gpu>=2.4.0
