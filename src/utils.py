@@ -30,7 +30,7 @@ from PIL import Image
 
 def setup_logger(name: str) -> logging.Logger:
     """Logger setup.
-    
+
     If you want to adjust the level, use
     > logger.setLevel(logging.DEBUG)
     where level is one of DEBUG, INFO, WARNING, ERROR or CRITICAL.

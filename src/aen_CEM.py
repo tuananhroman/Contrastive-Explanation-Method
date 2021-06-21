@@ -30,6 +30,7 @@ from .utils import setup_logger
 tf.disable_v2_behavior()
 log = setup_logger(__name__)
 
+
 class AEADEN:
     def __init__(
         self,

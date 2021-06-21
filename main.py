@@ -17,7 +17,7 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 ##
-## Edited: 06.2021 - Tuan Anh, Le - <tuananhle@dai-lab.de>
+## Edited: 06.2021 - Tuan Anh, Le - <tuananhle@dai-labor.de>
 
 import os
 import sys
@@ -25,6 +25,7 @@ import tensorflow as tf
 import numpy as np
 import random
 import time
+import logging
 
 from keras.layers import Lambda
 
@@ -34,6 +35,7 @@ from src.aen_CEM import AEADEN
 
 log = setup_logger(__name__)
 
+
 def setup_logging(log_level: str):
     try:
         log_level = getattr(logging, log_level)
@@ -42,8 +44,9 @@ def setup_logging(log_level: str):
         log.setLevel(logging.INFO)
     log.debug(f"Log level set to {log_level}.")
 
+
 def main(args):
-    setup_logger(args["log_level"])
+    setup_logging(args["log_level"])
 
     with tf.compat.v1.Session() as sess:
         random.seed(121)
@@ -62,11 +65,13 @@ def main(args):
         AE_model = load_AE("mnist_AE_1")
         data, model = MNIST(), MNISTModel("models/mnist", sess, False)
 
+        # get original image prediction
         orig_prob, orig_class, orig_prob_str = model_prediction(
             model, np.expand_dims(data.test_data[image_id], axis=0)
         )
         target_label = orig_class
         log.info("Image:{}, infer label:{}".format(image_id, target_label))
+        # get one hot vector
         orig_img, target = generate_data(data, image_id, target_label)
 
         attack = AEADEN(
@@ -91,7 +96,7 @@ def main(args):
             model, orig_img - adv_img
         )
 
-        INFO = "id:{}, kappa:{}, Orig class:{}, Adv class:{}, Delta class: {}, Orig prob:{}, Adv prob:{}, Delta prob:{}".format(
+        INFO = "id:{}, kappa:{}, Orig class:{}, Adv class:{}, Delta class: {}\n, Orig prob:{}\n, Adv prob:{}\n, Delta prob:{}\n".format(
             image_id,
             arg_kappa,
             orig_class,
