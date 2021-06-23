@@ -61,11 +61,11 @@ def main(args):
         arg_beta = args["beta"]
         arg_gamma = args["gamma"]
 
-        # init AE, MNIST data, NN
+        # [DATA INPUT] init AE, MNIST data, NN
         AE_model = load_AE("mnist_AE_1")
         data, model = MNIST(), MNISTModel("models/mnist", sess, False)
 
-        # get original image prediction
+        # [PREDICT] get original image prediction
         orig_prob, orig_class, orig_prob_str = model_prediction(
             model, np.expand_dims(data.test_data[image_id], axis=0)
         )
@@ -89,6 +89,7 @@ def main(args):
             gamma=arg_gamma,
         )
 
+        # [EXPL] generate explanation
         adv_img = attack.attack(orig_img, target)
 
         adv_prob, adv_class, adv_prob_str = model_prediction(model, adv_img)
